@@ -116,7 +116,7 @@ export default function BidTable() {
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([head, ...rows]), 'Bid Comparison')
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Sub', 'Item', 'Gap Low', 'Gap High', 'Recommendation'], ...gapRows]), 'Scope Gaps')
-    XLSX.writeFile(wb, `${(project.project_name || 'Project').replace(/\s+/g, '_')}_BidLevel.xlsx`)
+    XLSX.writeFile(wb, `${(project.project_name || 'Project').replace(/\s+/g, '_')}_BidClear.xlsx`)
   }
 
   const handlePdfExport = () => {
@@ -146,8 +146,8 @@ export default function BidTable() {
       autoTable(doc, { startY: y + 4, theme: 'grid', head: [['Item', 'Gap Value', 'Reason']], body: gapRows, headStyles: { fillColor: [220, 38, 38] }, columnStyles: { 2: { cellWidth: 70 } } })
     }
     doc.setFontSize(9); doc.setFont('helvetica', 'normal')
-    doc.text('Prepared using BidLevel — bidlevel.com', 14, doc.internal.pageSize.height - 12)
-    doc.save(`${(project.project_name || 'Project').replace(/\s+/g, '_')}_BidLevel.pdf`)
+    doc.text('Prepared using BidClear — bidclear.com', 14, doc.internal.pageSize.height - 12)
+    doc.save(`${(project.project_name || 'Project').replace(/\s+/g, '_')}_BidClear.pdf`)
   }
 
   // Alert strip
@@ -377,7 +377,7 @@ export default function BidTable() {
                   <div className="flex items-start gap-2">
                     <span className="material-symbols-outlined text-brand-blue text-lg mt-0.5">info</span>
                     <p className="text-sm text-charcoal">
-                      <span className="font-semibold">BidLevel recommends: </span>{drawer.flag.recommendation}
+                      <span className="font-semibold">BidClear recommends: </span>{drawer.flag.recommendation}
                     </p>
                   </div>
                 </div>

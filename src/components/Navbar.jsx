@@ -26,7 +26,7 @@ export default function Navbar({ active }) {
         <div className="w-8 h-8 bg-brand-blue rounded-md flex items-center justify-center">
           <span className="text-white font-bold text-sm">BL</span>
         </div>
-        <span className="text-charcoal font-bold text-lg">BidLevel</span>
+        <span className="text-charcoal font-bold text-lg">BidClear</span>
       </div>
 
       {/* Nav Links */}

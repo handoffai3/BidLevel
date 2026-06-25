@@ -54,7 +54,7 @@ export default function Signup() {
           <div className="w-8 h-8 bg-brand-blue rounded-md flex items-center justify-center">
             <span className="text-white font-bold text-sm">BL</span>
           </div>
-          <span className="text-charcoal font-bold text-lg">BidLevel</span>
+          <span className="text-charcoal font-bold text-lg">BidClear</span>
         </div>
 
         {/* Activated badge */}
@@ -63,7 +63,7 @@ export default function Signup() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-[28px] font-bold text-charcoal mb-1">Set up your BidLevel workspace</h1>
+        <h1 className="text-[28px] font-bold text-charcoal mb-1">Set up your BidClear workspace</h1>
         <p className="text-sm text-gray-text mb-8">Takes 2 minutes. Done once.</p>
 
         {/* Error */}

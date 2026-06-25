@@ -27,7 +27,7 @@ serve(async (req) => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "reports@bidlevel.com", // This might need to be verified in Resend or a test sender
+        from: "reports@bidclear.com", // This might need to be verified in Resend or a test sender
         to: toEmail,
         subject: `Bid Leveling Report — ${projectName}`,
         html: `
@@ -37,7 +37,7 @@ serve(async (req) => {
             <li>${gapsCount} scope gaps identified</li>
             <li>Recommended award: ${lowestBid}</li>
           </ul>
-          <p>Prepared by Harbor Construction Group using BidLevel.</p>
+          <p>Prepared by Harbor Construction Group using BidClear.</p>
         `,
         attachments: [
           {

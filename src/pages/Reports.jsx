@@ -170,7 +170,7 @@ export default function Reports() {
       autoTable(doc, { startY: y + 4, theme: 'grid', head: [['Item', 'Gap', 'Reason']], body: gapRows, headStyles: { fillColor: [220, 38, 38] }, columnStyles: { 2: { cellWidth: 70 } } })
     }
     doc.setFontSize(9); doc.setFont('helvetica', 'normal')
-    doc.text('Prepared using BidLevel — bidlevel.com', 14, doc.internal.pageSize.height - 12)
+    doc.text('Prepared using BidClear — bidclear.com', 14, doc.internal.pageSize.height - 12)
     return doc.output('arraybuffer')
   }
 
@@ -178,7 +178,7 @@ export default function Reports() {
     const { bids, scope, flags } = proj.id.startsWith('d') ? demoData() : await fetchProjectData(proj.id)
     const blob = buildExcelBlob(proj, bids, scope, flags)
     const url = URL.createObjectURL(new Blob([blob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }))
-    const a = document.createElement('a'); a.href = url; a.download = `${proj.name.replace(/\s+/g, '_')}_BidLevel.xlsx`; a.click()
+    const a = document.createElement('a'); a.href = url; a.download = `${proj.name.replace(/\s+/g, '_')}_BidClear.xlsx`; a.click()
     URL.revokeObjectURL(url)
   }
 
@@ -186,7 +186,7 @@ export default function Reports() {
     const { bids, flags } = proj.id.startsWith('d') ? demoData() : await fetchProjectData(proj.id)
     const buf = buildPdfBlob(proj, bids, flags)
     const url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }))
-    const a = document.createElement('a'); a.href = url; a.download = `${proj.name.replace(/\s+/g, '_')}_BidLevel.pdf`; a.click()
+    const a = document.createElement('a'); a.href = url; a.download = `${proj.name.replace(/\s+/g, '_')}_BidClear.pdf`; a.click()
     URL.revokeObjectURL(url)
   }
 
@@ -208,13 +208,13 @@ export default function Reports() {
       try {
         const { bids, flags } = proj.id.startsWith('d') ? demoData() : await fetchProjectData(proj.id)
         const buf = buildPdfBlob(proj, bids, flags)
-        zip.file(`${proj.name.replace(/\s+/g, '_')}_BidLevel.pdf`, buf)
+        zip.file(`${proj.name.replace(/\s+/g, '_')}_BidClear.pdf`, buf)
       } catch (err) { console.error(`Skipping ${proj.name}:`, err) }
     }
     setZipProgress('Compressing…')
     const blob = await zip.generateAsync({ type: 'blob' })
     const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'BidLevel_All_Reports.zip'; a.click()
+    const a = document.createElement('a'); a.href = url; a.download = 'BidClear_All_Reports.zip'; a.click()
     URL.revokeObjectURL(url)
     setZipProgress(null)
   }

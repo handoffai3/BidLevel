@@ -381,7 +381,7 @@ export default function NewProject() {
                   {[1,2,3,4,5].map((i) => <span key={i} className="text-brand-amber text-lg">★</span>)}
                 </div>
                 <p className="text-sm text-gray-text italic mb-3">
-                  "BidLevel caught a $42K exclusion we completely missed. Saved the entire project budget review."
+                  "BidClear caught a $42K exclusion we completely missed. Saved the entire project budget review."
                 </p>
                 <p className="text-xs font-semibold text-gray-text uppercase">— John M., Senior Estimator</p>
               </div>
@@ -600,7 +600,7 @@ export default function NewProject() {
                   <h3 className="font-bold text-charcoal text-sm">What happens next</h3>
                 </div>
                 <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2"><span className="text-brand-amber">1.</span> BidLevel reads all {files.filter((f) => f.status === 'done').length} bid files</li>
+                  <li className="flex items-start gap-2"><span className="text-brand-amber">1.</span> BidClear reads all {files.filter((f) => f.status === 'done').length} bid files</li>
                   <li className="flex items-start gap-2"><span className="text-brand-amber">2.</span> Extracts every line item and price</li>
                   <li className="flex items-start gap-2"><span className="text-brand-amber">3.</span> Detects scope exclusions and gaps</li>
                   <li className="flex items-start gap-2"><span className="text-brand-amber">4.</span> Builds your comparison table</li>
