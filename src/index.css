@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'DM Sans', sans-serif;
+  --color-brand-blue: #2563EB;
+  --color-brand-blue-dark: #1D4ED8;
+  --color-brand-blue-light: #EFF6FF;
+  --color-brand-blue-border: #BFDBFE;
+  --color-brand-green: #16A34A;
+  --color-brand-green-light: #F0FDF4;
+  --color-brand-green-border: #BBF7D0;
+  --color-brand-red: #DC2626;
+  --color-brand-red-light: #FEF2F2;
+  --color-brand-red-border: #FECACA;
+  --color-brand-amber: #F59E0B;
+  --color-brand-amber-light: #FEF3C7;
+  --color-brand-amber-border: #FDE68A;
+  --color-brand-orange-light: #FFF7ED;
+  --color-brand-orange-border: #FED7AA;
+  --color-brand-gray: #F8FAFC;
+  --color-charcoal: #111827;
+  --color-gray-text: #6B7280;
+  --color-gray-border: #E2E8F0;
+  --color-gray-bg: #F4F5F7;
+  --color-page-bg: #FAFAFA;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-page-bg);
+    color: var(--color-charcoal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.3); }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+}
