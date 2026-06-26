@@ -108,6 +108,20 @@ export default function BidTable() {
       console.error('saveNote error:', err)
       alert(`Error: ${err.message}`)
     }
+  const deleteBid = async (bidId, companyName) => {
+    if (!window.confirm(`Are you sure you want to remove the bid from ${companyName}? This cannot be undone.`)) return
+    try {
+      const { error } = await supabase.from('bids').delete().eq('id', bidId)
+      if (error) {
+        console.error('Failed to delete bid:', error)
+        alert(`Failed to delete bid: ${error.message}`)
+        return
+      }
+      setBids(prev => prev.filter(b => b.id !== bidId))
+    } catch (err) {
+      console.error('deleteBid error:', err)
+      alert(`Error: ${err.message}`)
+    }
   }
 
   const handleExcelExport = () => {
@@ -263,14 +277,6 @@ export default function BidTable() {
           )}
 
           {/* Table */}
-          {bids.length > 4 && (
-            <div className="bg-brand-blue-light/30 px-8 py-2 border-y border-brand-blue-border flex items-center gap-2 justify-center">
-              <span className="material-symbols-outlined text-brand-blue text-sm">swipe_left</span>
-              <p className="text-xs font-semibold text-brand-blue uppercase tracking-wide">
-                Scroll horizontally to see all {bids.length} bids
-              </p>
-            </div>
-          )}
           <div className="w-full overflow-x-auto border-t border-gray-border">
             <table className="w-full text-left border-collapse" style={{ minWidth: `${260 + bids.length * 180}px` }}>
               <thead>
@@ -280,11 +286,20 @@ export default function BidTable() {
                     const isLowest = lowestBid?.id === bid.id
                     const risk = bid.risk_level || 'low'
                     return (
-                      <th key={bid.id} className={`py-4 px-6 border-r border-gray-border text-center w-[180px] ${isLowest ? 'border-l-2 border-l-brand-green' : ''}`}>
-                        <div className={`text-xs font-semibold uppercase ${risk === 'high' ? 'text-brand-red' : risk === 'medium' ? 'text-brand-amber' : 'text-gray-text'}`}>
-                          {risk !== 'low' && '⚠ '}SUB {bids.indexOf(bid) + 1}
+                      <th key={bid.id} className={`py-4 px-6 border-r border-gray-border text-center w-[180px] group relative ${isLowest ? 'border-l-2 border-l-brand-green' : ''}`}>
+                        <div className="flex justify-between items-start">
+                          <div className={`text-xs font-semibold uppercase ${risk === 'high' ? 'text-brand-red' : risk === 'medium' ? 'text-brand-amber' : 'text-gray-text'}`}>
+                            {risk !== 'low' && '⚠ '}SUB {bids.indexOf(bid) + 1}
+                          </div>
+                          <button
+                            onClick={() => deleteBid(bid.id, bid.company_name)}
+                            title="Remove Bid"
+                            className="text-gray-text hover:text-brand-red opacity-0 group-hover:opacity-100 transition-opacity p-1 absolute top-2 right-2 bg-transparent border-0 cursor-pointer flex items-center justify-center rounded bg-brand-gray"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">close</span>
+                          </button>
                         </div>
-                        <div className="text-base font-bold text-charcoal mt-1">{bid.company_name}</div>
+                        <div className="text-base font-bold text-charcoal mt-1 pr-4">{bid.company_name}</div>
                         <div className="text-sm text-gray-text mt-0.5">{fmt(bid.base_total)}</div>
                       </th>
                     )
