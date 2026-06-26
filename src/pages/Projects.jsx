@@ -53,14 +53,11 @@ export default function Projects() {
       } else {
         // Demo
         setProjects([
-          { id: 'd1', name: 'Alpha Tower Core', trade: 'Concrete Superstructure', clientName: '', bids: 12, gaps: 3, status: 'processing', date: 'Oct 15, 2024' },
-          { id: 'd2', name: 'Nexus HQ Campus', trade: 'HVAC & Plumbing', clientName: '', bids: 8, gaps: 0, status: 'ready', date: 'Oct 12, 2024' },
-          { id: 'd3', name: 'Terminal 4 Expansion', trade: 'Structural Steel', clientName: '', bids: 5, gaps: 1, status: 'processing', date: 'Oct 10, 2024' },
-          { id: 'd4', name: 'Riverfront Residential', trade: 'Electrical Fit-out', clientName: '', bids: 14, gaps: 0, status: 'complete', date: 'Sep 28, 2024' },
-          { id: 'd5', name: 'Data Center Omega', trade: 'Fire Suppression', clientName: '', bids: 6, gaps: 2, status: 'processing', date: 'Sep 25, 2024' },
-          { id: 'd6', name: 'Metro Link Stations', trade: 'Elevators & Escalators', clientName: '', bids: 4, gaps: 0, status: 'ready', date: 'Sep 15, 2024' },
+          { id: 'd1', name: 'Alpha Tower Core', trade: 'Concrete Superstructure', clientName: '', bids: 3, gaps: 3, status: 'processing', date: 'Oct 15, 2024' },
+          { id: 'd2', name: 'Nexus HQ Campus', trade: 'HVAC & Plumbing', clientName: '', bids: 3, gaps: 0, status: 'ready', date: 'Oct 12, 2024' },
+          { id: 'd3', name: 'Terminal 4 Expansion', trade: 'Structural Steel', clientName: '', bids: 3, gaps: 1, status: 'processing', date: 'Oct 10, 2024' }
         ])
-        setTotalProjects(24)
+        setTotalProjects(3)
       }
     } catch (err) {
       console.error(err)
