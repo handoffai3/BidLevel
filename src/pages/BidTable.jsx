@@ -108,6 +108,8 @@ export default function BidTable() {
       console.error('saveNote error:', err)
       alert(`Error: ${err.message}`)
     }
+  }
+
   const deleteBid = async (bidId, companyName) => {
     if (!window.confirm(`Are you sure you want to remove the bid from ${companyName}? This cannot be undone.`)) return
     try {
