@@ -23,7 +23,7 @@ export default function Projects() {
 
       let query = supabase
         .from('projects')
-        .select('id, project_name, trade_package, client_name, status, created_at, bids(id), flags(id)', { count: 'exact' })
+        .select('id, project_name, trade_package, client_name, status, created_at, bids(id, base_total), flags(id)', { count: 'exact' })
         .order('created_at', { ascending: false })
 
       if (userId) {
@@ -45,7 +45,7 @@ export default function Projects() {
           name: p.project_name,
           trade: p.trade_package,
           clientName: p.client_name || '',
-          bids: p.bids?.length || 0,
+          bids: p.bids?.filter(b => b.base_total !== null).length || 0,
           gaps: p.flags?.length || 0,
           status: p.status,
           date: new Date(p.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
