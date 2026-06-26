@@ -76,22 +76,38 @@ export default function BidTable() {
 
   const markReviewed = async () => {
     if (!drawer?.flag) return
-    if (!drawer.flag.id.startsWith('d')) {
-      await supabase.from('flags').update({ is_reviewed: true }).eq('id', drawer.flag.id)
+    try {
+      const { error } = await supabase.from('flags').update({ is_reviewed: true }).eq('id', drawer.flag.id)
+      if (error) {
+        console.error('Failed to mark reviewed:', error)
+        alert(`Failed to save: ${error.message}`)
+        return
+      }
+      setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, is_reviewed: true } : f))
+      setDrawer(prev => ({ ...prev, flag: { ...prev.flag, is_reviewed: true } }))
+    } catch (err) {
+      console.error('markReviewed error:', err)
+      alert(`Error: ${err.message}`)
     }
-    setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, is_reviewed: true } : f))
-    setDrawer(prev => ({ ...prev, flag: { ...prev.flag, is_reviewed: true } }))
   }
 
   const saveNote = async () => {
     if (!drawer?.flag || !note.trim()) return
-    if (!drawer.flag.id.startsWith('d')) {
-      await supabase.from('flags').update({ note: note.trim() }).eq('id', drawer.flag.id)
+    try {
+      const { error } = await supabase.from('flags').update({ note: note.trim() }).eq('id', drawer.flag.id)
+      if (error) {
+        console.error('Failed to save note:', error)
+        alert(`Failed to save note: ${error.message}. You may need to add a "note" column (type: text) to your flags table in Supabase.`)
+        return
+      }
+      setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, note: note.trim() } : f))
+      setDrawer(prev => ({ ...prev, flag: { ...prev.flag, note: note.trim() } }))
+      setShowNoteInput(false)
+      setNoteSaved(true)
+    } catch (err) {
+      console.error('saveNote error:', err)
+      alert(`Error: ${err.message}`)
     }
-    setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, note: note.trim() } : f))
-    setDrawer(prev => ({ ...prev, flag: { ...prev.flag, note: note.trim() } }))
-    setShowNoteInput(false)
-    setNoteSaved(true)
   }
 
   const handleExcelExport = () => {
