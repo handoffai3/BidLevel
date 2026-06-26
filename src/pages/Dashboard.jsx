@@ -52,9 +52,8 @@ export default function Dashboard() {
         }))
         setProjects(mapped)
 
-        // Month stats
-        const totalBids = mapped.reduce((sum, p) => sum + p.bids, 0)
-        setMonthStats({ bids: totalBids, hours: mapped.length * 4 })
+        // Month stats — count projects leveled, not individual bid files
+        setMonthStats({ bids: mapped.length, hours: mapped.length * 4 })
       } else {
         if (userData?.user) {
           setProjects([])
