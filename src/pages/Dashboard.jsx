@@ -52,8 +52,9 @@ export default function Dashboard() {
         }))
         setProjects(mapped)
 
-        // Month stats — count projects leveled, not individual bid files
-        setMonthStats({ bids: mapped.length, hours: mapped.length * 4 })
+        // Month stats
+        const totalBids = mapped.reduce((sum, p) => sum + p.bids, 0)
+        setMonthStats({ bids: totalBids, hours: mapped.length * 4 })
       } else {
         if (userData?.user) {
           setProjects([])
@@ -120,7 +121,7 @@ export default function Dashboard() {
         {/* Stats Banner */}
         <div className="bg-white border border-gray-border border-l-4 border-l-brand-blue rounded-xl px-6 py-4 mb-8">
           <p className="text-sm text-gray-text">
-            This month: <span className="font-semibold text-charcoal">{monthStats.bids} bids leveled</span> · <span className="font-semibold text-charcoal">{monthStats.hours} hours saved</span> · <span className="font-semibold text-charcoal">$0 subscription fees</span>
+            This month: <span className="font-semibold text-charcoal">{monthStats.bids} bids cleared</span> · <span className="font-semibold text-charcoal">{monthStats.hours} hours saved</span> · <span className="font-semibold text-charcoal">$0 subscription fees</span>
           </p>
         </div>
 
