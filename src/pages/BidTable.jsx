@@ -33,7 +33,7 @@ export default function BidTable() {
       setProject(proj || {})
 
       const [{ data: bidsData }, { data: scopeData }, { data: flagsData }] = await Promise.all([
-        supabase.from('bids').select('*').eq('project_id', projectId).not('base_total', 'is', null).order('created_at'),
+        supabase.from('bids').select('*').eq('project_id', projectId).order('created_at'),
         supabase.from('scope_items').select('*').eq('project_id', projectId),
         supabase.from('flags').select('*').eq('project_id', projectId),
       ])
