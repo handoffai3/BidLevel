@@ -30,7 +30,7 @@ export default function Dashboard() {
 
       let query = supabase
         .from('projects')
-        .select('id, project_name, trade_package, status, created_at, bids(id, base_total), flags(id)')
+        .select('id, project_name, trade_package, status, created_at, bids(id), flags(id)')
         .order('created_at', { ascending: false })
         .limit(6)
         
@@ -45,7 +45,7 @@ export default function Dashboard() {
           id: p.id,
           name: p.project_name,
           trade: p.trade_package,
-          bids: p.bids?.filter(b => b.base_total !== null).length || 0,
+          bids: p.bids?.length || 0,
           gaps: p.flags?.length || 0,
           status: p.status,
           date: new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
