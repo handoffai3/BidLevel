@@ -159,7 +159,7 @@ export default function Settings() {
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!file.name.match(/\.(png|svg)$/i)) { showToast('Only PNG or SVG allowed', 'error'); return }
+    if (!file.name.match(/\.(png|svg|jpg|jpeg)$/i)) { showToast('Only PNG, JPG, or SVG allowed', 'error'); return }
 
     const path = `${userId}/logo.png`
     const { error } = await supabase.storage.from('logos').upload(path, file, { upsert: true })
@@ -332,8 +332,8 @@ export default function Settings() {
                 >
                   {logoPreview ? 'Change Logo' : 'Upload Logo'}
                 </button>
-                <p className="text-xs text-gray-text mt-1">PNG or SVG only</p>
-                <input ref={logoRef} type="file" accept=".png,.svg" className="hidden" onChange={handleLogoUpload} />
+                <p className="text-xs text-gray-text mt-1">PNG, JPG, or SVG only</p>
+                <input ref={logoRef} type="file" accept=".png,.svg,.jpg,.jpeg" className="hidden" onChange={handleLogoUpload} />
               </div>
             </div>
           </div>

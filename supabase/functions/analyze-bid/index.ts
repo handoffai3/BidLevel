@@ -70,7 +70,7 @@ Extract ALL of the following from this bid document and return ONLY as valid JSO
     {
       "item_name": "problem item name",
       "flag_type": "scope_gap or unusual_price",
-      "extracted_text": "exact words from bid",
+      "extracted_text": "copy the complete sentence or paragraph from the bid document that describes this exclusion or issue. Include full context. Minimum 15 words. If you cannot find the exact sentence, write what the bid implies about this item in quotes.",
       "gap_low": 00000,
       "gap_high": 00000,
       "recommendation": "plain english what to do"

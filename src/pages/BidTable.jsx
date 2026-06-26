@@ -80,7 +80,7 @@ export default function BidTable() {
       await supabase.from('flags').update({ is_reviewed: true }).eq('id', drawer.flag.id)
     }
     setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, is_reviewed: true } : f))
-    setDrawer(null)
+    setDrawer(prev => ({ ...prev, flag: { ...prev.flag, is_reviewed: true } }))
   }
 
   const saveNote = async () => {
@@ -88,6 +88,9 @@ export default function BidTable() {
     if (!drawer.flag.id.startsWith('d')) {
       await supabase.from('flags').update({ note: note.trim() }).eq('id', drawer.flag.id)
     }
+    setFlags(prev => prev.map(f => f.id === drawer.flag.id ? { ...f, note: note.trim() } : f))
+    setDrawer(prev => ({ ...prev, flag: { ...prev.flag, note: note.trim() } }))
+    setShowNoteInput(false)
     setNoteSaved(true)
   }
 
@@ -272,12 +275,14 @@ export default function BidTable() {
                       const cell = row[bid.id]
                       const isExcluded = !cell || cell.status === 'excluded' || cell.status === 'missing'
                       const isAmber = cell?.flag?.flag_type === 'unusual_price'
-                      const isReviewed = cell?.flag?.is_reviewed
+                      // Read from live flags state so reviewed status updates in real-time
+                      const liveFlag = cell?.flag?.id ? flags.find(f => f.id === cell.flag.id) : null
+                      const isReviewed = liveFlag?.is_reviewed || cell?.flag?.is_reviewed
 
                       return (
                         <td
                           key={bid.id}
-                          onClick={() => (isExcluded || isAmber) && openDrawer(bid, cell)}
+                          onClick={() => (isExcluded || isAmber) && openDrawer(bid, { ...cell, flag: liveFlag || cell?.flag })}
                           className={`py-3 px-6 border-r border-gray-border text-right relative ${
                             isExcluded ? 'bg-brand-red text-white font-semibold cursor-pointer hover:bg-red-700 transition-colors' :
                             isAmber ? 'bg-brand-amber-light text-[#92400E] font-bold cursor-pointer hover:bg-amber-100 transition-colors' :
@@ -296,7 +301,7 @@ export default function BidTable() {
                             </>
                           )}
                           {isReviewed && (
-                            <span className="absolute top-1 right-1 text-xs">✓</span>
+                            <span className="absolute top-1 right-1 bg-white/80 text-brand-green text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">✓</span>
                           )}
                         </td>
                       )
@@ -346,32 +351,59 @@ export default function BidTable() {
         <>
           <div className="fixed inset-0 bg-black/30 z-40 backdrop-blur-[1px]" onClick={() => setDrawer(null)} />
           <aside className="fixed right-0 top-0 bottom-0 w-[440px] bg-white border-l border-gray-border z-50 flex flex-col shadow-2xl" style={{ animation: 'slide-in-right 0.3s ease' }}>
+            {/* Section 1 — Header */}
             <div className="border-t-4 border-brand-red pt-6 pb-5 px-6 border-b border-gray-border shrink-0">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-xs font-semibold text-gray-text uppercase tracking-wider">
+              <div className="flex justify-between items-start mb-3">
+                <span className="text-sm font-semibold text-charcoal">
                   {drawer.bid.company_name} · {drawer.flag.item_name}
                 </span>
                 <button onClick={() => setDrawer(null)} className="text-gray-text hover:text-charcoal bg-transparent border-0 cursor-pointer">
                   <span className="material-symbols-outlined">close</span>
                 </button>
               </div>
-              <h2 className="text-lg font-bold text-brand-red flex items-center gap-2">⚠ SCOPE EXCLUDED</h2>
+              {/* Section 2 — Status */}
+              <h2 className="text-xl font-bold text-brand-red flex items-center gap-2">
+                <span className="material-symbols-outlined text-brand-red">warning</span>
+                SCOPE EXCLUDED
+              </h2>
             </div>
 
             <div className="flex-grow overflow-y-auto px-6 py-6 space-y-6">
-              {drawer.flag.extracted_text && (
-                <div className="bg-brand-gray border-l-[3px] border-brand-red rounded-r-lg p-4">
-                  <p className="text-sm font-mono text-gray-600 italic">"{drawer.flag.extracted_text}"</p>
-                </div>
-              )}
+              {/* Section 3 — Extracted Text */}
+              {drawer.flag.extracted_text && (() => {
+                const wordCount = drawer.flag.extracted_text.trim().split(/\s+/).length
+                const isShort = wordCount < 8
+                return (
+                  <div className="bg-brand-gray border-l-[3px] border-brand-red rounded-r-lg p-4">
+                    <p className={`text-sm font-mono italic ${isShort ? 'text-brand-amber' : 'text-gray-600'}`}>
+                      "{drawer.flag.extracted_text}"
+                    </p>
+                    {isShort && (
+                      <p className="text-xs text-brand-amber mt-2 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">info</span>
+                        Limited context extracted from document
+                      </p>
+                    )}
+                  </div>
+                )
+              })()}
+
+              {/* Section 4 — Gap Value */}
               <div>
-                <span className="text-xs text-gray-text uppercase font-semibold">Estimated gap value:</span>
+                <span className="text-xs text-gray-text uppercase font-semibold tracking-wide">Estimated gap value:</span>
                 <p className="text-xl font-bold text-brand-red mt-1">
                   {drawer.flag.gap_low === drawer.flag.gap_high
                     ? fmt(drawer.flag.gap_low)
-                    : `${fmt(drawer.flag.gap_low)} – ${fmt(drawer.flag.gap_high)}`}
+                    : `${fmt(drawer.flag.gap_low)} — ${fmt(drawer.flag.gap_high)}`}
                 </p>
+                {drawer.flag.gap_low != null && drawer.flag.gap_high != null && (
+                  <p className="text-sm text-gray-text mt-1">
+                    Impact on adjusted total: +{fmt(Math.round((drawer.flag.gap_low + drawer.flag.gap_high) / 2))} avg
+                  </p>
+                )}
               </div>
+
+              {/* Section 5 — Recommendation Box */}
               {drawer.flag.recommendation && (
                 <div className="bg-brand-blue-light border border-brand-blue-border rounded-xl p-4">
                   <div className="flex items-start gap-2">
@@ -382,39 +414,62 @@ export default function BidTable() {
                   </div>
                 </div>
               )}
-              {/* Add Note */}
+
+              {/* Saved Note Display (below recommendation) */}
+              {noteSaved && note.trim() && (
+                <div className="flex items-start gap-2">
+                  <p className="text-sm text-gray-text italic flex-grow">"{note.trim()}"</p>
+                  <button
+                    onClick={() => { setNoteSaved(false); setShowNoteInput(true) }}
+                    className="text-xs text-brand-blue bg-transparent border-0 cursor-pointer hover:underline shrink-0"
+                  >Edit</button>
+                </div>
+              )}
+              {!noteSaved && drawer.flag.note && !showNoteInput && (
+                <div className="flex items-start gap-2">
+                  <p className="text-sm text-gray-text italic flex-grow">"{drawer.flag.note}"</p>
+                  <button
+                    onClick={() => { setNote(drawer.flag.note); setShowNoteInput(true) }}
+                    className="text-xs text-brand-blue bg-transparent border-0 cursor-pointer hover:underline shrink-0"
+                  >Edit</button>
+                </div>
+              )}
+
+              {/* Section 6 — Add Note */}
               {showNoteInput ? (
                 <div>
                   <textarea
                     value={note}
                     onChange={e => setNote(e.target.value)}
                     rows={3}
-                    placeholder="Type your note here…"
+                    placeholder="Add your notes here..."
                     className="w-full border border-gray-border rounded-lg px-3 py-2 text-sm text-charcoal outline-none focus:border-brand-blue resize-none"
                   />
-                  {noteSaved ? (
-                    <p className="text-xs text-brand-green mt-1 font-semibold">Note saved ✓</p>
-                  ) : (
-                    <button onClick={saveNote} className="mt-2 text-xs font-semibold text-brand-blue bg-transparent border-0 cursor-pointer hover:underline">Save note</button>
-                  )}
+                  <button
+                    onClick={saveNote}
+                    disabled={!note.trim()}
+                    className="mt-2 bg-brand-green hover:bg-green-700 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >Save Note</button>
                 </div>
-              ) : (
-                drawer.flag.note && (
-                  <div className="bg-brand-gray rounded-lg p-3">
-                    <p className="text-xs font-semibold text-gray-text uppercase mb-1">Note</p>
-                    <p className="text-sm text-charcoal">{drawer.flag.note}</p>
-                  </div>
-                )
+              ) : !noteSaved && !drawer.flag.note && (
+                <button
+                  onClick={() => setShowNoteInput(true)}
+                  className="text-sm text-gray-text bg-transparent border-0 cursor-pointer hover:text-brand-blue hover:underline transition-colors"
+                >ADD NOTE</button>
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-border shrink-0 space-y-2">
-              <button onClick={markReviewed} className="w-full bg-brand-green hover:bg-green-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors">
-                ✓ Mark Reviewed
-              </button>
-              <button onClick={() => setShowNoteInput(v => !v)} className="w-full text-gray-text text-sm bg-transparent border border-gray-border rounded-xl py-2.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                {showNoteInput ? 'CANCEL NOTE' : 'ADD NOTE'}
-              </button>
+            {/* Section 7 — Mark Reviewed */}
+            <div className="p-6 border-t border-gray-border shrink-0">
+              {drawer.flag.is_reviewed ? (
+                <button disabled className="w-full bg-gray-300 text-white font-semibold py-3 rounded-xl text-sm cursor-not-allowed">
+                  ✓ Reviewed
+                </button>
+              ) : (
+                <button onClick={markReviewed} className="w-full bg-brand-green hover:bg-green-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors">
+                  ✓ Mark Reviewed
+                </button>
+              )}
             </div>
           </aside>
         </>

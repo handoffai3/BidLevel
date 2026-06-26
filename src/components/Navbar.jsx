@@ -24,7 +24,7 @@ export default function Navbar({ active }) {
         onClick={() => navigate('/dashboard')}
       >
         <div className="w-8 h-8 bg-brand-blue rounded-md flex items-center justify-center">
-          <span className="text-white font-bold text-sm">BL</span>
+          <span className="text-white font-bold text-sm">BC</span>
         </div>
         <span className="text-charcoal font-bold text-lg">BidClear</span>
       </div>
