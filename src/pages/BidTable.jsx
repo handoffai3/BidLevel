@@ -263,6 +263,14 @@ export default function BidTable() {
           )}
 
           {/* Table */}
+          {bids.length > 4 && (
+            <div className="bg-brand-blue-light/30 px-8 py-2 border-y border-brand-blue-border flex items-center gap-2 justify-center">
+              <span className="material-symbols-outlined text-brand-blue text-sm">swipe_left</span>
+              <p className="text-xs font-semibold text-brand-blue uppercase tracking-wide">
+                Scroll horizontally to see all {bids.length} bids
+              </p>
+            </div>
+          )}
           <div className="w-full overflow-x-auto border-t border-gray-border">
             <table className="w-full text-left border-collapse" style={{ minWidth: `${260 + bids.length * 180}px` }}>
               <thead>
