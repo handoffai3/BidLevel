@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useDemo } from '../lib/DemoContext'
+import { DEMO_PROJECT, DEMO_BIDS, DEMO_FLAGS, buildDemoMatrix } from '../lib/demoData'
 import Navbar from '../components/Navbar'
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
@@ -11,6 +13,7 @@ const fmt = (n) => n == null ? '—' : '$' + Number(n).toLocaleString('en-US')
 export default function BidTable() {
   const navigate = useNavigate()
   const { id: projectId } = useParams()
+  const { isDemo } = useDemo()
   const [loading, setLoading] = useState(true)
   const [project, setProject] = useState({})
   const [bids, setBids] = useState([])
@@ -26,6 +29,17 @@ export default function BidTable() {
   const load = async () => {
     setLoading(true)
     try {
+      // ── Demo mode ───────────────────────────────────────────────────────
+      if (isDemo || projectId.startsWith('demo-')) {
+        setProject(DEMO_PROJECT)
+        setBids(DEMO_BIDS)
+        setFlags(DEMO_FLAGS)
+        setMatrix(buildDemoMatrix())
+        setLoading(false)
+        return
+      }
+
+      // ── Live mode ───────────────────────────────────────────────────────
       // Check if project is still processing
       const { data: proj } = await supabase.from('projects')
         .select('project_name, trade_package, status').eq('id', projectId).single()

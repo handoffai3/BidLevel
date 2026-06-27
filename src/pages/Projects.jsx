@@ -1,10 +1,13 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useDemo } from '../lib/DemoContext'
+import { DEMO_DASHBOARD_PROJECTS, DEMO_FLAGS } from '../lib/demoData'
 import Navbar from '../components/Navbar'
 
 export default function Projects() {
   const navigate = useNavigate()
+  const { isDemo } = useDemo()
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -18,6 +21,19 @@ export default function Projects() {
   const fetchProjects = async () => {
     setLoading(true)
     try {
+      // ── Demo mode ─────────────────────────────────────────────────────
+      if (isDemo) {
+        setProjects(DEMO_DASHBOARD_PROJECTS.map(p => ({
+          ...p,
+          clientName: 'Grandview Health Systems',
+          date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        })))
+        setTotalProjects(1)
+        setLoading(false)
+        return
+      }
+
+      // ── Live mode ─────────────────────────────────────────────────────
       const { data: userData } = await supabase.auth.getUser()
       const userId = userData?.user?.id
 
@@ -51,13 +67,8 @@ export default function Projects() {
           date: new Date(p.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
         })))
       } else {
-        // Demo
-        setProjects([
-          { id: 'd1', name: 'Alpha Tower Core', trade: 'Concrete Superstructure', clientName: '', bids: 3, gaps: 3, status: 'processing', date: 'Oct 15, 2024' },
-          { id: 'd2', name: 'Nexus HQ Campus', trade: 'HVAC & Plumbing', clientName: '', bids: 3, gaps: 0, status: 'ready', date: 'Oct 12, 2024' },
-          { id: 'd3', name: 'Terminal 4 Expansion', trade: 'Structural Steel', clientName: '', bids: 3, gaps: 1, status: 'processing', date: 'Oct 10, 2024' }
-        ])
-        setTotalProjects(3)
+        setProjects([])
+        setTotalProjects(0)
       }
     } catch (err) {
       console.error(err)

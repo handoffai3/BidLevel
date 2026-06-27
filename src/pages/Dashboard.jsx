@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useDemo } from '../lib/DemoContext'
+import { DEMO_DASHBOARD_PROJECTS } from '../lib/demoData'
 import Navbar from '../components/Navbar'
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { isDemo } = useDemo()
   const [userName, setUserName] = useState('')
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
@@ -17,6 +20,16 @@ export default function Dashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
+      // ── Demo mode ─────────────────────────────────────────────────────────
+      if (isDemo) {
+        setUserName('Demo User')
+        setProjects(DEMO_DASHBOARD_PROJECTS)
+        setMonthStats({ bids: 3, hours: 12 })
+        setLoading(false)
+        return
+      }
+
+      // ── Live mode ─────────────────────────────────────────────────────────
       // Get user profile
       const { data: userData } = await supabase.auth.getUser()
       if (userData?.user) {
@@ -59,17 +72,6 @@ export default function Dashboard() {
         if (userData?.user) {
           setProjects([])
           setMonthStats({ bids: 0, hours: 0 })
-        } else {
-          // Demo data
-          setProjects([
-            { id: 'd1', name: 'Riverfront Tower B', trade: 'Electrical', bids: 5, gaps: 3, status: 'ready', date: 'Oct 12' },
-            { id: 'd2', name: 'Nexus HQ Campus', trade: 'HVAC & Plumbing', bids: 8, gaps: 0, status: 'complete', date: 'Oct 10' },
-            { id: 'd3', name: 'Terminal 4 Expansion', trade: 'Structural Steel', bids: 5, gaps: 1, status: 'processing', date: 'Oct 8' },
-            { id: 'd4', name: 'Data Center Omega', trade: 'Fire Suppression', bids: 6, gaps: 2, status: 'processing', date: 'Sep 28' },
-            { id: 'd5', name: 'Metro Link Stations', trade: 'Elevators', bids: 4, gaps: 0, status: 'ready', date: 'Sep 15' },
-            { id: 'd6', name: 'Alpha Tower Core', trade: 'Concrete', bids: 12, gaps: 3, status: 'complete', date: 'Sep 10' },
-          ])
-          setMonthStats({ bids: 24, hours: 24 })
         }
       }
     } catch (err) {
@@ -91,31 +93,54 @@ export default function Dashboard() {
   const needsReview = projects.filter(p => p.status === 'ready' || p.status === 'processing').length
 
   const handleCardClick = (p) => {
-    if (p.status === 'processing') navigate(`/projects/${p.id}/processing`)
-    else navigate(`/projects/${p.id}/table`)
+    if (p.id.startsWith('demo-') || p.status === 'ready' || p.status === 'complete') {
+      navigate(`/projects/${p.id}/table`)
+    } else if (p.status === 'processing') {
+      navigate(`/projects/${p.id}/processing`)
+    } else {
+      navigate(`/projects/${p.id}/table`)
+    }
   }
 
   return (
     <div className="min-h-screen bg-page-bg flex flex-col">
       <Navbar active="dashboard" />
 
+      {/* Demo Banner */}
+      {isDemo && (
+        <div className="bg-brand-amber-light border-b border-brand-amber-border px-6 py-2.5 flex items-center justify-center gap-2">
+          <span className="material-symbols-outlined text-[#92400E] text-base">science</span>
+          <p className="text-sm font-medium text-[#92400E]">
+            You're in demo mode — exploring with sample data.
+            <button
+              onClick={() => navigate('/login')}
+              className="ml-2 underline font-semibold bg-transparent border-0 cursor-pointer text-[#92400E]"
+            >
+              Sign in for real
+            </button>
+          </p>
+        </div>
+      )}
+
       <main className="flex-grow w-full max-w-[1200px] mx-auto px-12 py-12">
         {/* Title Row */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-[32px] font-bold text-charcoal mb-1">
-              Good morning, {userName}.
+              Good morning, {userName || 'there'}.
             </h1>
             <p className="text-sm text-gray-text">
               You have {needsReview} project{needsReview !== 1 ? 's' : ''} needing review.
             </p>
           </div>
-          <button
-            onClick={() => navigate('/projects/new')}
-            className="bg-brand-blue hover:bg-brand-blue-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
-          >
-            <span className="text-lg leading-none">+</span> NEW PROJECT
-          </button>
+          {!isDemo && (
+            <button
+              onClick={() => navigate('/projects/new')}
+              className="bg-brand-blue hover:bg-brand-blue-dark text-white text-sm font-semibold px-5 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer transition-colors"
+            >
+              <span className="text-lg leading-none">+</span> NEW PROJECT
+            </button>
+          )}
         </div>
 
         {/* Stats Banner */}

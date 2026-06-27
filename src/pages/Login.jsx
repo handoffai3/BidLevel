@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useDemo } from '../lib/DemoContext'
 
 export default function Login() {
   const navigate = useNavigate()
+  const { enterDemo } = useDemo()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -22,6 +24,11 @@ export default function Login() {
     } else {
       navigate('/dashboard')
     }
+  }
+
+  const handleTryDemo = () => {
+    enterDemo()
+    navigate('/dashboard')
   }
 
   return (
@@ -90,6 +97,22 @@ export default function Login() {
           </button>
         </form>
 
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-border" />
+          <span className="text-xs text-gray-text uppercase">or</span>
+          <div className="flex-1 h-px bg-gray-border" />
+        </div>
+
+        {/* Try Demo */}
+        <button
+          onClick={handleTryDemo}
+          className="w-full border-2 border-brand-blue text-brand-blue font-semibold py-3 rounded-xl text-sm bg-white hover:bg-brand-blue-light transition-colors cursor-pointer flex items-center justify-center gap-2"
+        >
+          <span className="material-symbols-outlined text-lg">play_circle</span>
+          Try Demo — No Account Needed
+        </button>
+
         {/* Signup link */}
         <p className="text-center text-sm text-gray-text mt-6">
           Don't have an account?{' '}
@@ -106,3 +129,4 @@ export default function Login() {
     </div>
   )
 }
+

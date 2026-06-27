@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useDemo } from '../lib/DemoContext'
 
 const links = [
   { key: 'dashboard', label: 'Dashboard', path: '/dashboard' },
@@ -10,8 +11,14 @@ const links = [
 
 export default function Navbar({ active }) {
   const navigate = useNavigate()
+  const { isDemo, exitDemo } = useDemo()
 
   const handleLogout = async () => {
+    if (isDemo) {
+      exitDemo()
+      navigate('/login')
+      return
+    }
     await supabase.auth.signOut()
     navigate('/login')
   }
@@ -27,6 +34,11 @@ export default function Navbar({ active }) {
           <span className="text-white font-bold text-sm">BC</span>
         </div>
         <span className="text-charcoal font-bold text-lg">BidClear</span>
+        {isDemo && (
+          <span className="bg-brand-amber text-white text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ml-1">
+            Demo
+          </span>
+        )}
       </div>
 
       {/* Nav Links */}
@@ -55,7 +67,7 @@ export default function Navbar({ active }) {
           onClick={handleLogout}
           className="text-gray-text text-sm bg-transparent border-0 cursor-pointer hover:text-charcoal transition-colors"
         >
-          Logout
+          {isDemo ? 'Exit Demo' : 'Logout'}
         </button>
         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
           <span className="material-symbols-outlined text-gray-text text-xl">person</span>
