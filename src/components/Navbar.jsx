@@ -43,7 +43,7 @@ export default function Navbar({ active }) {
 
       {/* Nav Links */}
       <div className="flex items-center gap-8">
-        {links.map(link => (
+        {links.filter(link => !isDemo || (link.key !== 'settings' && link.key !== 'reports')).map(link => (
           <button
             key={link.key}
             onClick={() => navigate(link.path)}
